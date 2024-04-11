@@ -37,9 +37,7 @@ def get_config() -> "bt.Config":
         help="Chain endpoint to connect to.",
     )
     # Adds override arguments for network and netuid.
-    parser.add_argument(
-        "--netuid", type=int, default=1, help="The chain subnet uid."
-    )
+    parser.add_argument("--netuid", type=int, default=1, help="The chain subnet uid.")
 
     parser.add_argument(
         "--miner.root",
@@ -97,7 +95,7 @@ def get_config() -> "bt.Config":
     bt.axon.add_args(parser)
 
     # Activating the parser to read any command-line inputs.
-    # To print help message, run python3 template/miner.py --help
+    # To print help message, run python3 spamdetection/miner.py --help
     config = bt.config(parser)
 
     # Logging captures events for diagnosis or understanding miner's behavior.

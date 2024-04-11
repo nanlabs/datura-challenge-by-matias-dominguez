@@ -1,10 +1,11 @@
 import time
-
 import asyncio
 import random
 import bittensor as bt
 
 from typing import List
+
+from spamdetection.protocol import SpamDetectionSynapse, SpamAssessmentResult
 
 
 class MockSubtensor(bt.MockSubtensor):
@@ -62,7 +63,7 @@ class MockDendrite(bt.dendrite):
     async def forward(
         self,
         axons: List[bt.axon],
-        synapse: bt.Synapse = bt.Synapse(),
+        synapse: SpamDetectionSynapse = SpamDetectionSynapse(),
         timeout: float = 12,
         deserialize: bool = True,
         run_async: bool = True,
@@ -75,31 +76,30 @@ class MockDendrite(bt.dendrite):
             """Queries all axons for responses."""
 
             async def single_axon_response(i, axon):
-                """Queries a single axon for a response."""
+                """Simulates querying a single axon for a spam assessment response."""
 
                 start_time = time.time()
                 s = synapse.copy()
-                # Attach some more required data so it looks real
-                s = self.preprocess_synapse_for_request(axon, s, timeout)
-                # We just want to mock the response, so we'll just fill in some data
+                # Simulate processing
                 process_time = random.random()
                 if process_time < timeout:
+                    # Mock spam assessment
+                    s.evaluation_response = SpamAssessmentResult(
+                        request_id=s.evaluation_request.request_id,
+                        is_spam=random.choice([True, False]),
+                        confidence=random.uniform(0.5, 1.0),
+                    )
                     s.dendrite.process_time = str(time.time() - start_time)
-                    # Update the status code and status message of the dendrite to match the axon
-                    # TODO (developer): replace with your own expected synapse data
-                    s.dummy_output = s.dummy_input * 2
                     s.dendrite.status_code = 200
                     s.dendrite.status_message = "OK"
-                    synapse.dendrite.process_time = str(process_time)
                 else:
-                    s.dummy_output = 0
+                    # Simulate a timeout scenario
                     s.dendrite.status_code = 408
                     s.dendrite.status_message = "Timeout"
-                    synapse.dendrite.process_time = str(timeout)
 
                 # Return the updated synapse object after deserializing if requested
                 if deserialize:
-                    return s.deserialize()
+                    return s.evaluation_response
                 else:
                     return s
 
@@ -114,9 +114,9 @@ class MockDendrite(bt.dendrite):
 
     def __str__(self) -> str:
         """
-        Returns a string representation of the Dendrite object.
+        Returns a string representation of the MockDendrite object.
 
         Returns:
-            str: The string representation of the Dendrite object in the format "dendrite(<user_wallet_address>)".
+            str: The string representation of the MockDendrite object in the format "MockDendrite(<user_wallet_address>)".
         """
-        return "MockDendrite({})".format(self.keypair.ss58_address)
+        return f"MockDendrite({self.wallet.ss58_address})"
