@@ -37,7 +37,13 @@ async def forward(self):
 
     # Example spam message to send for detection.
     # In a real scenario, you would cycle through or randomly generate spam/non-spam messages.
-    example_message = "Earn money fast by investing in cryptocurrencies!"
+    # For the validator this is not a spam message because it does not contain the word "spam".
+    example_message = "Simple message!"
+
+    # randomly decide whether to add a spam keyword to the message.
+    # For the purpose of this example, the validator will assume the message is spam if it contains the word "spam".
+    if bt.random.uniform(0, 1) > 0.5:
+        example_message = "This is a spam message: Earn money fast!"
 
     # The dendrite client queries the network with spam detection requests.
     responses = await self.dendrite(
