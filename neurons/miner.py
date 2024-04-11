@@ -1,7 +1,6 @@
 # The MIT License (MIT)
 # Copyright © 2023 Yuma Rao
-# TODO(developer): Set your name
-# Copyright © 2023 <your name>
+# Copyright © 2024 Matias Dominguez
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 # documentation files (the “Software”), to deal in the Software without restriction, including without limitation
@@ -22,10 +21,10 @@ import typing
 import bittensor as bt
 
 # Bittensor Miner Template:
-import spamdetector
+import spamdetection
 
 # import base miner class which takes care of most of the boilerplate
-from spamdetector.base.miner import BaseMinerNeuron
+from spamdetection.base.miner import BaseMinerNeuron
 
 
 class Miner(BaseMinerNeuron):
@@ -43,8 +42,8 @@ class Miner(BaseMinerNeuron):
         # TODO(developer): Anything specific to your use case you can do here
 
     async def forward(
-        self, synapse: spamdetector.protocol.Dummy
-    ) -> spamdetector.protocol.Dummy:
+        self, synapse: spamdetection.protocol.SpamDetectionSynapse
+    ) -> spamdetection.protocol.SpamDetectionSynapse:
         """
         Processes the incoming 'Dummy' synapse by performing a predefined operation on the input data.
         This method should be replaced with actual logic relevant to the miner's purpose.
@@ -59,11 +58,11 @@ class Miner(BaseMinerNeuron):
         the miner's intended operation. This method demonstrates a basic transformation of input data.
         """
         # TODO(developer): Replace with actual implementation logic.
-        synapse.dummy_output = synapse.dummy_input * 2
+        synapse.evaluation_response = synapse.evaluation_request * 2
         return synapse
 
     async def blacklist(
-        self, synapse: spamdetector.protocol.Dummy
+        self, synapse: spamdetection.protocol.SpamDetectionSynapse
     ) -> typing.Tuple[bool, str]:
         """
         Determines whether an incoming request should be blacklisted and thus ignored. Your implementation should
@@ -119,7 +118,7 @@ class Miner(BaseMinerNeuron):
         )
         return False, "Hotkey recognized!"
 
-    async def priority(self, synapse: spamdetector.protocol.Dummy) -> float:
+    async def priority(self, synapse: spamdetection.protocol.SpamDetectionSynapse) -> float:
         """
         The priority function determines the order in which requests are handled. More valuable or higher-priority
         requests are processed before others. You should design your own priority mechanism with care.

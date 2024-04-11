@@ -1,7 +1,6 @@
 # The MIT License (MIT)
 # Copyright © 2023 Yuma Rao
-# TODO(developer): Set your name
-# Copyright © 2023 <your name>
+# Copyright © 2024 Matias Dominguez
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
 # documentation files (the “Software”), to deal in the Software without restriction, including without limitation
@@ -24,11 +23,11 @@ import time
 import bittensor as bt
 
 # Bittensor Validator Template:
-import spamdetector
-from spamdetector.validator import forward
+import spamdetection
+from spamdetection.validator import forward
 
 # import base validator class which takes care of most of the boilerplate
-from spamdetector.base.validator import BaseValidatorNeuron
+from spamdetection.base.validator import BaseValidatorNeuron
 
 
 class Validator(BaseValidatorNeuron):
