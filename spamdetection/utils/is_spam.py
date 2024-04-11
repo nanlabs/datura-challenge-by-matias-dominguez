@@ -1,4 +1,6 @@
-def is_spam(message_obj):
+from spamdetection.protocol import EvaluationRequest, SpamAssessmentResult
+
+def is_spam(evaluation_request: EvaluationRequest) -> SpamAssessmentResult:
     """
     Determines whether a message is spam based on a simplistic keyword matching approach.
 
@@ -8,18 +10,19 @@ def is_spam(message_obj):
     more sophisticated methods.
 
     Parameters:
-    - message_obj (dict): A dictionary object that must include 'id' and 'message'
-      keys. The 'message' key contains the text of the message to be analyzed.
+    - evaluation_request (EvaluationRequest): An instance of EvaluationRequest containing
+      the 'request_id' and 'message' to be analyzed.
 
     Returns:
-    - dict: A dictionary containing the original 'id', a boolean 'is_spam' indicating
-      if the message is considered spam, and a 'confidence' field representing the
-      confidence level of the spam assessment (set arbitrarily in this simple model).
-
+    - SpamAssessmentResult: An instance of SpamAssessmentResult containing the original
+      'request_id', a boolean 'is_spam' indicating if the message is considered spam, and
+      a 'confidence' field representing the confidence level of the spam assessment.
+    
     Example:
-    >>> message_obj = {"id": 1, "message": "Earn money easily from your home!"}
-    >>> is_spam(message_obj)
-    {'id': 1, 'is_spam': True, 'confidence': 0.95}
+    >>> evaluation_request = EvaluationRequest(request_id=1, message="Earn money easily from your home!")
+    >>> result = is_spam(evaluation_request)
+    >>> print(result.is_spam, result.confidence)
+    True 0.95
     """
     
     # List of simple spam keywords for illustration purposes
@@ -27,15 +30,10 @@ def is_spam(message_obj):
     confidence = 0.95  # Arbitrary confidence level for this simplistic model
     
     # Checking if any spam keywords are present in the message
-    if any(keyword in message_obj["message"].lower() for keyword in spam_keywords):
-        return {"id": message_obj["id"], "is_spam": True, "confidence": confidence}
+    if any(keyword in evaluation_request.message.lower() for keyword in spam_keywords):
+        return SpamAssessmentResult(request_id=evaluation_request.request_id, is_spam=True, confidence=confidence)
     else:
-        return {"id": message_obj["id"], "is_spam": False, "confidence": 0.05}  # Low confidence for non-spam messages
-    
-# Example of how to use the function
-# message_obj = {"id": 123, "message": "Earn money easily from your home!"}
-# result = is_spam(message_obj)
-# print(result)
+        return SpamAssessmentResult(request_id=evaluation_request.request_id, is_spam=False, confidence=0.05)  # Low confidence for non-spam messages
 
 """
 In a real-world scenario, spam detection would likely involve more advanced machine learning models
