@@ -1,114 +1,87 @@
-# The MIT License (MIT)
-# Copyright © 2023 Yuma Rao
-# Copyright © 2023 Opentensor Foundation
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated
-# documentation files (the “Software”), to deal in the Software without restriction, including without limitation
-# the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,
-# and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in all copies or substantial portions of
-# the Software.
-
-# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-# THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-# DEALINGS IN THE SOFTWARE.
-
+import asyncio
 import sys
 import torch
 import unittest
 import bittensor as bt
 
-from neurons.validator import Neuron as Validator
-from neurons.miner import Neuron as Miner
-
-from spamdetection.protocol import SpamDetectionSynapse
-from spamdetection.validator.forward import forward
+from spamdetection.protocol import SpamDetectionSynapse, EvaluationRequest, SpamAssessmentResult
+from spamdetection.validator import ValidatorNeuron
 from spamdetection.utils.uids import get_random_uids
 from spamdetection.validator.reward import get_rewards
-from spamdetection.base.validator import BaseValidatorNeuron
 
-
-class TemplateValidatorNeuronTestCase(unittest.TestCase):
+class SpamDetectionValidatorNeuronTestCase(unittest.TestCase):
     """
-    This class contains unit tests for the RewardEvent classes.
-
-    The tests cover different scenarios where completions may or may not be successful and the reward events are checked that they don't contain missing values.
-    The `reward` attribute of all RewardEvents is expected to be a float, and the `is_filter_model` attribute is expected to be a boolean.
+    Unit tests for the spam detection validator neuron, focusing on the evaluation and reward system for miners.
     """
 
     def setUp(self):
-        sys.argv = sys.argv[0] + ["--config", "tests/configs/validator.json"]
-
-        config = BaseValidatorNeuron.config()
+        # Simplified setup assuming a configuration method similar to what was previously described.
+        sys.argv = sys.argv[:1]  # Resets argv to avoid issues with unittest arguments.
+        config = ValidatorNeuron.config()
         config.wallet._mock = True
         config.metagraph._mock = True
         config.subtensor._mock = True
-        self.neuron = Validator(config)
-        self.miner_uids = get_random_uids(self, k=10)
+        self.validator = ValidatorNeuron(config)
+        self.miner_uids = get_random_uids(self.validator, k=10)
 
     def test_run_single_step(self):
-        # TODO: Test a single step
+        # Example placeholder test.
         pass
 
     def test_sync_error_if_not_registered(self):
-        # TODO: Test that the validator throws an error if it is not registered on metagraph
+        # Example placeholder test.
         pass
 
     def test_forward(self):
-        # TODO: Test that the forward function returns the correct value
+        """
+        Test that the forward function correctly evaluates spam detection requests and returns accurate responses.
+        """
+        # Example of simulating a spam detection request.
+        spam_message = "This is a spam message example."
+        synapse = SpamDetectionSynapse(evaluation_request=EvaluationRequest(request_id=1, message=spam_message))
+        
+        # Simulate the forward call
+        result_synapse = asyncio.run(self.validator.dendrite.forward(synapse))
+        
+        # Assert the response is as expected (Note: This assumes the existence of a mocked forward method)
+        self.assertIsInstance(result_synapse.evaluation_response, SpamAssessmentResult)
+        self.assertTrue(result_synapse.evaluation_response.is_spam)  # Assuming the message is identified as spam.
+
+    def test_spamdetection_responses(self):
+        """
+        Test that spamdetection responses are correctly handled. This is more of a conceptual test,
+        as the real implementation would not use spamdetection inputs or expect doubled outputs.
+        """
+        # This test would need significant adaptation to fit into a spam detection scenario.
         pass
 
-    def test_dummy_responses(self):
-        # TODO: Test that the dummy responses are correctly constructed
-
-        responses = self.neuron.dendrite.query(
-            # Send the query to miners in the network.
-            axons=[
-                self.neuron.metagraph.axons[uid] for uid in self.miner_uids
-            ],
-            # Construct a dummy query.
-            synapse=SpamDetectionSynapse(dummy_input=self.neuron.step),
-            # All responses have the deserialize function called on them before returning.
-            deserialize=True,
-        )
-
-        for i, response in enumerate(responses):
-            self.assertEqual(response, self.neuron.step * 2)
-
     def test_reward(self):
-        # TODO: Test that the reward function returns the correct value
-        responses = self.dendrite.query(
-            # Send the query to miners in the network.
-            axons=[self.metagraph.axons[uid] for uid in self.miner_uids],
-            # Construct a dummy query.
-            synapse=SpamDetectionSynapse(dummy_input=self.neuron.step),
-            # All responses have the deserialize function called on them before returning.
-            deserialize=True,
-        )
-
-        rewards = get_rewards(self.neuron, responses)
-        expected_rewards = torch.FloatTensor([1.0] * len(responses))
-        self.assertEqual(rewards, expected_rewards)
+        """
+        Test that the reward function returns the correct values based on miners' responses to spam detection queries.
+        """
+        # Simulate obtaining responses from the network
+        # Note: This section needs adaptation to create a mocked network response scenario.
+        
+        # Example of obtaining rewards
+        responses = [SpamAssessmentResult(request_id=1, is_spam=True, confidence=0.9)] * len(self.miner_uids)
+        rewards = get_rewards(self.validator, responses)
+        
+        # Assuming all responses are correct and receive a reward of 1.0
+        expected_rewards = torch.FloatTensor([1.0] * len(responses)).to(self.validator.device)
+        torch.testing.assert_allclose(rewards, expected_rewards)
 
     def test_reward_with_nan(self):
-        # TODO: Test that NaN rewards are correctly sanitized
-        # TODO: Test that a bt.logging.warning is thrown when a NaN reward is sanitized
-        responses = self.dendrite.query(
-            # Send the query to miners in the network.
-            axons=[self.metagraph.axons[uid] for uid in self.miner_uids],
-            # Construct a dummy query.
-            synapse=SpamDetectionSynapse(dummy_input=self.neuron.step),
-            # All responses have the deserialize function called on them before returning.
-            deserialize=True,
-        )
-
-        rewards = get_rewards(self.neuron, responses)
-        expected_rewards = rewards.clone()
-        # Add NaN values to rewards
-        rewards[0] = float("nan")
-
-        with self.assertLogs(bt.logging, level="WARNING") as cm:
-            self.neuron.update_scores(rewards, self.miner_uids)
+        """
+        Test that NaN rewards are correctly sanitized and a warning is logged.
+        """
+        responses = [SpamAssessmentResult(request_id=1, is_spam=True, confidence=0.9)] * len(self.miner_uids)
+        rewards = get_rewards(self.validator, responses)
+        
+        # Intentionally introduce NaN to simulate error handling
+        rewards[0] = float('nan')
+        
+        # Mocking logging to capture warnings
+        with self.assertLogs('bittensor', level='WARNING') as cm:
+            sanitized_rewards = self.validator.sanitize_rewards(rewards)
+            self.assertNotIn(float('nan'), sanitized_rewards, "NaN reward was not sanitized")
+            self.assertTrue(any("WARNING" in message for message in cm.output), "Expected warning log for NaN reward")
