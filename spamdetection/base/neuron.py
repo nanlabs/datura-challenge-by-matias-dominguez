@@ -23,10 +23,10 @@ import bittensor as bt
 from abc import ABC, abstractmethod
 
 # Sync calls set weights and also resyncs the metagraph.
-from spamdetector.utils.config import check_config, add_args, config
-from spamdetector.utils.misc import ttl_get_block
-from spamdetector import __spec_version__ as spec_version
-from spamdetector.mock import MockSubtensor, MockMetagraph
+from spamdetection.utils.config import check_config, add_args, config
+from spamdetection.utils.misc import ttl_get_block
+from spamdetection import __spec_version__ as spec_version
+from spamdetection.mock import MockSubtensor, MockMetagraph
 
 
 class BaseNeuron(ABC):

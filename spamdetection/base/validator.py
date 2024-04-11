@@ -27,9 +27,9 @@ import bittensor as bt
 from typing import List
 from traceback import print_exception
 
-from spamdetector.base.neuron import BaseNeuron
-from spamdetector.mock import MockDendrite
-from spamdetector.utils.config import add_validator_args
+from spamdetection.base.neuron import BaseNeuron
+from spamdetection.mock import MockDendrite
+from spamdetection.utils.config import add_validator_args
 
 
 class BaseValidatorNeuron(BaseNeuron):

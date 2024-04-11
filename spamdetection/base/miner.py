@@ -24,8 +24,8 @@ import traceback
 
 import bittensor as bt
 
-from spamdetector.base.neuron import BaseNeuron
-from spamdetector.utils.config import add_miner_args
+from spamdetection.base.neuron import BaseNeuron
+from spamdetection.utils.config import add_miner_args
 
 
 class BaseMinerNeuron(BaseNeuron):
