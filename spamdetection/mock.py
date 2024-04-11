@@ -35,6 +35,7 @@ class MockSubtensor(bt.MockSubtensor):
                 stake=100000,
             )
 
+
 class MockMetagraph(bt.metagraph):
     def __init__(self, netuid=1, network="mock", subtensor=None):
         super().__init__(netuid=netuid, network=network, sync=False)
@@ -49,6 +50,7 @@ class MockMetagraph(bt.metagraph):
 
         bt.logging.info(f"Metagraph: {self}")
         bt.logging.info(f"Axons: {self.axons}")
+
 
 class MockDendrite(bt.dendrite):
     """
@@ -85,7 +87,7 @@ class MockDendrite(bt.dendrite):
                     s.evaluation_response = SpamAssessmentResult(
                         request_id=s.evaluation_request.request_id,
                         is_spam=random.choice([True, False]),
-                        confidence=random.uniform(0.5, 1.0)
+                        confidence=random.uniform(0.5, 1.0),
                     )
                     s.dendrite.process_time = str(time.time() - start_time)
                     s.dendrite.status_code = 200

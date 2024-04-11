@@ -24,6 +24,7 @@ from spamdetection.protocol import SpamDetectionSynapse, SpamAssessmentResult
 from spamdetection.base.miner import BaseMinerNeuron
 from spamdetection.utils.is_spam import is_spam
 
+
 class Miner(BaseMinerNeuron):
     """
     Custom miner neuron class for spam detection. Inherits from BaseMinerNeuron, which provides
@@ -103,6 +104,7 @@ class Miner(BaseMinerNeuron):
             f"Prioritizing {synapse.dendrite.hotkey} with value: ", priority
         )
         return priority
+
 
 # This is the main function, which runs the miner.
 if __name__ == "__main__":

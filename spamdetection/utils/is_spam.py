@@ -1,5 +1,6 @@
 from spamdetection.protocol import EvaluationRequest, SpamAssessmentResult
 
+
 def is_spam(evaluation_request: EvaluationRequest) -> SpamAssessmentResult:
     """
     Determines whether a message is spam based on a simplistic keyword matching approach.
@@ -17,23 +18,30 @@ def is_spam(evaluation_request: EvaluationRequest) -> SpamAssessmentResult:
     - SpamAssessmentResult: An instance of SpamAssessmentResult containing the original
       'request_id', a boolean 'is_spam' indicating if the message is considered spam, and
       a 'confidence' field representing the confidence level of the spam assessment.
-    
+
     Example:
     >>> evaluation_request = EvaluationRequest(request_id=1, message="Earn money easily from your home!")
     >>> result = is_spam(evaluation_request)
     >>> print(result.is_spam, result.confidence)
     True 0.95
     """
-    
+
     # List of simple spam keywords for illustration purposes
     spam_keywords = ["earn money", "easily", "subscribe"]
     confidence = 0.95  # Arbitrary confidence level for this simplistic model
-    
+
     # Checking if any spam keywords are present in the message
     if any(keyword in evaluation_request.message.lower() for keyword in spam_keywords):
-        return SpamAssessmentResult(request_id=evaluation_request.request_id, is_spam=True, confidence=confidence)
+        return SpamAssessmentResult(
+            request_id=evaluation_request.request_id,
+            is_spam=True,
+            confidence=confidence,
+        )
     else:
-        return SpamAssessmentResult(request_id=evaluation_request.request_id, is_spam=False, confidence=0.05)  # Low confidence for non-spam messages
+        return SpamAssessmentResult(
+            request_id=evaluation_request.request_id, is_spam=False, confidence=0.05
+        )  # Low confidence for non-spam messages
+
 
 """
 In a real-world scenario, spam detection would likely involve more advanced machine learning models

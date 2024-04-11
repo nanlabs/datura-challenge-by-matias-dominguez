@@ -4,10 +4,15 @@ import torch
 import unittest
 import bittensor as bt
 
-from spamdetection.protocol import SpamDetectionSynapse, EvaluationRequest, SpamAssessmentResult
+from spamdetection.protocol import (
+    SpamDetectionSynapse,
+    EvaluationRequest,
+    SpamAssessmentResult,
+)
 from spamdetection.validator import ValidatorNeuron
 from spamdetection.utils.uids import get_random_uids
 from spamdetection.validator.reward import get_rewards
+
 
 class SpamDetectionValidatorNeuronTestCase(unittest.TestCase):
     """
@@ -38,14 +43,18 @@ class SpamDetectionValidatorNeuronTestCase(unittest.TestCase):
         """
         # Example of simulating a spam detection request.
         spam_message = "This is a spam message example."
-        synapse = SpamDetectionSynapse(evaluation_request=EvaluationRequest(request_id=1, message=spam_message))
-        
+        synapse = SpamDetectionSynapse(
+            evaluation_request=EvaluationRequest(request_id=1, message=spam_message)
+        )
+
         # Simulate the forward call
         result_synapse = asyncio.run(self.validator.dendrite.forward(synapse))
-        
+
         # Assert the response is as expected (Note: This assumes the existence of a mocked forward method)
         self.assertIsInstance(result_synapse.evaluation_response, SpamAssessmentResult)
-        self.assertTrue(result_synapse.evaluation_response.is_spam)  # Assuming the message is identified as spam.
+        self.assertTrue(
+            result_synapse.evaluation_response.is_spam
+        )  # Assuming the message is identified as spam.
 
     def test_spamdetection_responses(self):
         """
@@ -61,27 +70,38 @@ class SpamDetectionValidatorNeuronTestCase(unittest.TestCase):
         """
         # Simulate obtaining responses from the network
         # Note: This section needs adaptation to create a mocked network response scenario.
-        
+
         # Example of obtaining rewards
-        responses = [SpamAssessmentResult(request_id=1, is_spam=True, confidence=0.9)] * len(self.miner_uids)
+        responses = [
+            SpamAssessmentResult(request_id=1, is_spam=True, confidence=0.9)
+        ] * len(self.miner_uids)
         rewards = get_rewards(self.validator, responses)
-        
+
         # Assuming all responses are correct and receive a reward of 1.0
-        expected_rewards = torch.FloatTensor([1.0] * len(responses)).to(self.validator.device)
+        expected_rewards = torch.FloatTensor([1.0] * len(responses)).to(
+            self.validator.device
+        )
         torch.testing.assert_allclose(rewards, expected_rewards)
 
     def test_reward_with_nan(self):
         """
         Test that NaN rewards are correctly sanitized and a warning is logged.
         """
-        responses = [SpamAssessmentResult(request_id=1, is_spam=True, confidence=0.9)] * len(self.miner_uids)
+        responses = [
+            SpamAssessmentResult(request_id=1, is_spam=True, confidence=0.9)
+        ] * len(self.miner_uids)
         rewards = get_rewards(self.validator, responses)
-        
+
         # Intentionally introduce NaN to simulate error handling
-        rewards[0] = float('nan')
-        
+        rewards[0] = float("nan")
+
         # Mocking logging to capture warnings
-        with self.assertLogs('bittensor', level='WARNING') as cm:
+        with self.assertLogs("bittensor", level="WARNING") as cm:
             sanitized_rewards = self.validator.sanitize_rewards(rewards)
-            self.assertNotIn(float('nan'), sanitized_rewards, "NaN reward was not sanitized")
-            self.assertTrue(any("WARNING" in message for message in cm.output), "Expected warning log for NaN reward")
+            self.assertNotIn(
+                float("nan"), sanitized_rewards, "NaN reward was not sanitized"
+            )
+            self.assertTrue(
+                any("WARNING" in message for message in cm.output),
+                "Expected warning log for NaN reward",
+            )

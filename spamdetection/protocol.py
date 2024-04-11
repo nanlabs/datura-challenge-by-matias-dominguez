@@ -19,6 +19,7 @@
 import typing
 import bittensor as bt
 
+
 class EvaluationRequest:
     """
     Represents a request to evaluate a message for spam detection.
@@ -27,9 +28,11 @@ class EvaluationRequest:
     - request_id (int): A unique identifier for the request.
     - message (str): The message text to be evaluated for potential spam.
     """
+
     def __init__(self, request_id: int, message: str):
         self.request_id = request_id
         self.message = message
+
 
 class SpamAssessmentResult:
     """
@@ -40,10 +43,12 @@ class SpamAssessmentResult:
     - is_spam (bool): Indicates whether the message was determined to be spam.
     - confidence (float): A confidence score for the spam assessment, ranging from 0 to 1.
     """
+
     def __init__(self, request_id: int, is_spam: bool, confidence: float):
         self.request_id = request_id
         self.is_spam = is_spam
         self.confidence = confidence
+
 
 class SpamDetectionSynapse(bt.Synapse):
     """
@@ -56,12 +61,12 @@ class SpamDetectionSynapse(bt.Synapse):
     """
 
     # The message for spam evaluation, filled by the validator.
-    evaluation_request: 'EvaluationRequest'
+    evaluation_request: "EvaluationRequest"
 
     # The assessment result from the miner, indicating if the message is spam.
-    evaluation_response: typing.Optional['SpamAssessmentResult'] = None
+    evaluation_response: typing.Optional["SpamAssessmentResult"] = None
 
-    def deserialize(self) -> 'SpamAssessmentResult':
+    def deserialize(self) -> "SpamAssessmentResult":
         """
         Deserializes the evaluation response from the miner, allowing it to be processed or displayed.
 

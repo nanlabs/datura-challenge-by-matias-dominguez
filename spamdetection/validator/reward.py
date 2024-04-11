@@ -20,14 +20,15 @@ import torch
 from typing import List
 from spamdetection.protocol import EvaluationRequest, SpamAssessmentResult
 
+
 def reward(expected_spam: bool, response: SpamAssessmentResult) -> float:
     """
     Calculate the reward for a single miner's response based on the accuracy of their spam detection.
-    
+
     Args:
     - expected_spam (bool): Whether the message sent in the query was spam.
     - response (SpamAssessmentResult): The miner's response to the spam detection request.
-    
+
     Returns:
     - float: The reward value for the miner, based on the correctness of their response.
     """
@@ -37,6 +38,7 @@ def reward(expected_spam: bool, response: SpamAssessmentResult) -> float:
         return 1.0
     else:
         return 0
+
 
 def get_rewards(
     self,
@@ -49,15 +51,15 @@ def get_rewards(
     Args:
     - message (str): The message that was sent to miners for spam detection.
     - responses (List[SpamAssessmentResult]): The list of responses from miners.
-    
+
     Returns:
     - torch.FloatTensor: A tensor containing the reward values for each response.
     """
     # Example logic to decide if the original message was intended to be spam or not.
     # Replace or refine this with your actual logic or predefined labels.
     expected_spam = "spam" in message.lower()
-    
+
     # Calculate rewards for each response based on its accuracy.
     rewards = [reward(expected_spam, response) for response in responses]
-    
+
     return torch.FloatTensor(rewards).to(self.device)

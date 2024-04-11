@@ -22,6 +22,7 @@ from spamdetection.protocol import SpamDetectionSynapse, EvaluationRequest
 from spamdetection.validator.reward import get_rewards
 from spamdetection.utils.uids import get_random_uids
 
+
 async def forward(self):
     """
     The forward function is called by the validator at every time step.
@@ -50,7 +51,11 @@ async def forward(self):
         # Send the query to selected miner axons in the network.
         axons=[self.metagraph.axons[uid] for uid in miner_uids],
         # Construct a SpamDetectionSynapse query.
-        synapse=SpamDetectionSynapse(evaluation_request=EvaluationRequest(request_id=self.step, message=example_message)),
+        synapse=SpamDetectionSynapse(
+            evaluation_request=EvaluationRequest(
+                request_id=self.step, message=example_message
+            )
+        ),
         # Ensure responses are deserialized according to SpamDetectionSynapse specification.
         deserialize=True,
     )
